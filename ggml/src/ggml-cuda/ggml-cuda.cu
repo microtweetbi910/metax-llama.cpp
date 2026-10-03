@@ -1820,7 +1820,7 @@ static bool ggml_cuda_should_fuse_mul_mat_vec_q(const ggml_tensor * tensor) {
         return false;
     }
 
-    return use_mul_mat_vec_q;
+    return use_mul_mat_vec_q && ggml_cuda_should_use_mmvq(cc);
 }
 
 static bool ggml_cuda_match_shared_expert(const ggml_cgraph * graph, int routed_idx, int shared_idx) {
