@@ -308,7 +308,15 @@ static ggml_cuda_device_info ggml_cuda_init() {
         info.devices[id].integrated = false; // Temporarily disabled due to issues with corrupted output (e.g. #15034)
         info.devices[id].nsm        = prop.multiProcessorCount;
         info.devices[id].smpb       = prop.sharedMemPerBlock;
+#if defined(GGML_USE_METAX)
+        // The C500 driver reports warpSize=64, but the shuffle/XOR granularity is
+        // 32 lanes (width=64 is a no-op, width>32 reduce doubles). Configure the
+        // hand-written kernels (MMVQ/MMQ/MMF) at the native 32-lane width so the
+        // warp_reduce_sum<32> shuffle is a true full reduce.
+        info.devices[id].warp_size  = 32;
+#else
         info.devices[id].warp_size  = prop.warpSize;
+#endif
 
         int supports_coop_launch = 0;
         CUDA_CHECK(cudaDeviceGetAttribute(&supports_coop_launch, cudaDevAttrCooperativeLaunch, physical_id));

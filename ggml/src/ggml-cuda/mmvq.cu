@@ -282,7 +282,7 @@ static constexpr __host__ __device__ int get_mmvq_mmid_max_batch_rdna4(ggml_type
 }
 
 bool ggml_cuda_should_use_mmvq(int cc) {
-    return !GGML_CUDA_CC_IS_METAX(cc);
+    return true;
 }
 
 // Host function: returns the max batch size for the current arch+type at runtime.
@@ -320,10 +320,6 @@ int get_mmvq_mmid_max_batch(ggml_type type, int cc) {
 }
 
 bool ggml_cuda_should_use_mmvq(enum ggml_type type, int cc, int64_t ne11) {
-    if (GGML_CUDA_CC_IS_METAX(cc)) {
-        return false;
-    }
-
     if (!ggml_is_quantized(type)) {
         return false;
     }
